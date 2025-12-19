@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoices</title>
+</head>
+<body>
+
+<h2>Invoices List</h2>
+
+<ul>
+  <% if (invoices.length === 0) { %>
+    <li>No invoices found</li>
+  <% } %>
+
+  <% invoices.forEach(inv => { %>
+    <li>
+      <b><%= inv.invoice_number %></b>
+      — ₹<%= inv.amount %>
+      — <%= inv.status %>
+      <% if (inv.client_name) { %>
+        (Client: <%= inv.client_name %>)
+      <% } %>
+    </li>
+  <% }) %>
+</ul>
+
+</body>
+</html>

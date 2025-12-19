@@ -1,0 +1,50 @@
+<%- include("../layout", {
+  body: `
+    <div class="container" style="max-width: 600px;">
+
+      <a href="/clients/${clientId}" class="btn btn-link mb-3">
+        ← Back to Client
+      </a>
+
+      <h2 class="mb-4">Add New Invoice</h2>
+
+      <form
+        method="POST"
+        action="/clients/${clientId}/invoices/new"
+        class="card p-4 shadow-sm"
+      >
+
+        <div class="mb-3">
+          <label class="form-label">Invoice Amount</label>
+          <input
+            type="number"
+            name="amount"
+            class="form-control"
+            placeholder="Enter amount"
+            required
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="pending" selected>Pending</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+
+        <!-- ✅ PROFESSIONAL BUTTON ROW -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary me-2">
+            Save Invoice
+          </button>
+          <a href="/clients/${clientId}" class="btn btn-light">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  `
+}) %>

@@ -1,0 +1,84 @@
+<!-- <h1>Clients List</h1>
+
+<p>Filter:</p>
+
+<p>
+  <a href="/clients">All</a> |
+  <a href="/clients?status=active">Active</a> |
+  <a href="/clients?status=inactive">Inactive</a>
+</p>
+
+<hr>
+
+<ul>
+  <% clients.forEach(client => { %>
+    <li>
+      <strong><%= client.name %></strong>
+      | <%= client.email %>
+      | <%= client.phone %>
+      | Status: <%= client.status %>
+    </li>
+  <% }) %>
+</ul>
+
+<br>
+<a href="/dashboard">Back to Dashboard</a> -->
+
+<!-- main code -->
+<!-- <h1>Clients List</h1>
+
+<p>Filter:</p>
+
+<p>
+  <a href="/clients">All</a> |
+  <a href="/clients?status=active">Active</a> |
+  <a href="/clients?status=inactive">Inactive</a>
+</p>
+
+<hr>
+
+<ul>
+  <% clients.forEach(client => { %>
+    <li>
+      <strong>
+        <a href="/clients/<%= client.id %>">
+          <%= client.name %>
+        </a>
+      </strong>
+      | <%= client.email %>
+      | <%= client.phone %>
+      | Status: <%= client.status %>
+    </li>
+  <% }) %>
+</ul>
+
+<br>
+<a href="/dashboard">Back to Dashboard</a> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clients</title>
+</head>
+<body>
+
+<h2>Clients List</h2>
+
+<ul>
+  <% if (clients.length === 0) { %>
+    <li>No clients found</li>
+  <% } %>
+
+  <% clients.forEach(client => { %>
+    <li>
+      <a href="/clients/<%= client.id %>">
+        <%= client.name %>
+      </a>
+      (<%= client.status %>)
+    </li>
+  <% }) %>
+</ul>
+
+</body>
+</html>

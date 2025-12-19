@@ -1,0 +1,38 @@
+
+<%- include("../layout", {
+  body: `
+    <a href="/clients" class="btn btn-link mb-3">← Back to Clients</a>
+
+    <h2 class="mb-4">Add New Client</h2>
+
+    <form method="POST" action="/clients/new">
+      <div class="mb-3">
+        <label class="form-label">Client Name</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control">
+      </div>
+
+      <!-- 🔥 STATUS FIELD ADDED -->
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="active" selected>Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Save Client
+      </button>
+    </form>
+  `
+}) %>

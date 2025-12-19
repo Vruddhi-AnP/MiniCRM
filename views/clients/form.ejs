@@ -1,0 +1,60 @@
+<%- include("../layout", {
+  body: `
+    <div class="container" style="max-width: 700px;">
+      <h2 class="mb-4">Add New Client</h2>
+
+      <form action="/clients/new" method="POST" class="card p-4 shadow-sm">
+
+        <div class="mb-3">
+          <label class="form-label">Client Name</label>
+          <input
+            type="text"
+            name="name"
+            class="form-control"
+            placeholder="Enter client name"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="client@email.com"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            class="form-control"
+            placeholder="Phone number"
+          >
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="active" selected>Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <!-- ✅ PROFESSIONAL BUTTON ROW (FIXED ORDER) -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary me-2">
+            Create Client
+          </button>
+          <a href="/clients" class="btn btn-light">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  `
+}) %>

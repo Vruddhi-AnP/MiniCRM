@@ -1,0 +1,76 @@
+<%- include("../layout", {
+  body: `
+    <!-- ============ HEADER + ADD BUTTON ============ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Clients</h2>
+      <a href="/clients/new" class="btn btn-success">
+        + Add New Client
+      </a>
+    </div>
+
+    <!-- ================= STATUS FILTER ================= -->
+    <form method="GET" action="/clients" class="mb-3">
+      <label class="me-2">Filter by Status:</label>
+
+      <select name="status"
+              onchange="this.form.submit()"
+              class="form-select w-auto d-inline">
+
+        <option value=""
+          ${filterStatus === "" ? "selected" : ""}>
+          All
+        </option>
+
+        <option value="active"
+          ${filterStatus === "active" ? "selected" : ""}>
+          Active
+        </option>
+
+        <option value="inactive"
+          ${filterStatus === "inactive" ? "selected" : ""}>
+          Inactive
+        </option>
+
+      </select>
+    </form>
+
+    <!-- ================= CLIENTS TABLE ================= -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>City</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${
+          clients.length === 0
+            ? `<tr><td colspan="5">No clients found</td></tr>`
+            : clients.map(c => `
+                <tr>
+                  <td>${c.name}</td>
+                  <td>${c.type || "-"}</td>
+                  <td>${c.city || "-"}</td>
+                  <td>
+                    <span class="badge ${
+                      c.status === "active" ? "bg-success" : "bg-secondary"
+                    }">
+                      ${c.status}
+                    </span>
+                  </td>
+                  <td>
+                    <a href="/clients/${c.id}" class="btn btn-sm btn-primary">
+                      View
+                    </a>
+                  </td>
+                </tr>
+              `).join("")
+        }
+      </tbody>
+    </table>
+  `
+}) %>

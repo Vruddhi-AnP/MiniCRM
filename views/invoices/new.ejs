@@ -1,0 +1,29 @@
+<%- include("../layout", {
+  body: `
+     
+    <a href="/clients/${clientId}" class="btn btn-link mb-3">
+      ← Back to Client
+    </a>
+
+    <h2 class="mb-4">Add New Invoice</h2>
+
+    <form method="POST" action="/clients/${clientId}/invoices/new">
+      <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input type="number" name="amount" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Save Invoice
+      </button>
+    </form>
+  `
+}) %>
