@@ -39,8 +39,6 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Type</th>
-          <th>City</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -49,12 +47,10 @@
       <tbody>
         ${
           clients.length === 0
-            ? `<tr><td colspan="5">No clients found</td></tr>`
+            ? `<tr><td colspan="3">No clients found</td></tr>`
             : clients.map(c => `
                 <tr>
                   <td>${c.name}</td>
-                  <td>${c.type || "-"}</td>
-                  <td>${c.city || "-"}</td>
                   <td>
                     <span class="badge ${
                       c.status === "active" ? "bg-success" : "bg-secondary"

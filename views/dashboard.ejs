@@ -79,7 +79,13 @@
                   <td>${t.title}</td>
                   <td>${t.client_name || "-"}</td>
                   <td>${t.status}</td>
-                  <td>${t.due_date || "-"}</td>
+                  <td>
+                    ${
+                      t.due_date
+                        ? new Date(t.due_date).toISOString().slice(0, 10)
+                        : "-"
+                    }
+                  </td>
                 </tr>
               `).join("")
         }
