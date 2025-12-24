@@ -1,3 +1,4 @@
+
 // const express = require("express");
 // const router = express.Router();
 // const taskController = require("../controllers/taskController");
@@ -5,60 +6,46 @@
 // // List tasks
 // router.get("/tasks", taskController.listTasks);
 
-// module.exports = router;
-
-
-// const express = require("express");
-// const router = express.Router();
-// const taskController = require("../controllers/taskController");
-
-// // ==============================
-// // SHOW NEW TASK FORM (CLIENT SPECIFIC)
-// // GET /clients/:id/tasks/new
-// // ==============================
-// router.get("/clients/:id/tasks/new", taskController.showNewTaskForm);
-
-// // ==============================
-// // LIST TASKS
-// // GET /tasks
-// // ==============================
-// router.get("/tasks", taskController.listTasks);
-
-// module.exports = router;
-
-
-// const express = require("express");
-// const router = express.Router();
-// const taskController = require("../controllers/taskController");
-
-// // 🔥 NEW TASK FORM (IMPORTANT: above others)
+// // New task form
 // router.get(
 //   "/clients/:id/tasks/new",
 //   taskController.showNewTaskForm
 // );
 
-// // List tasks
-// router.get("/tasks", taskController.listTasks);
+// // Save task
+// router.post(
+//   "/clients/:id/tasks/new",
+//   taskController.createTask
+// );
 
 // module.exports = router;
-
 
 const express = require("express");
 const router = express.Router();
 const taskController = require("../controllers/taskController");
 
-// List tasks
-router.get("/tasks", taskController.listTasks);
+const { ensureAuthenticated } = require("../middleware/authMiddleware");
+const allowRoles = require("../middleware/roleMiddleware");
 
-// New task form
+// ✅ List tasks (ADMIN + SUPERADMIN)
+router.get(
+  "/tasks",
+  ensureAuthenticated,
+  allowRoles("admin", "superadmin"),
+  taskController.listTasks
+);
+
+// New task form (LOGIN ONLY)
 router.get(
   "/clients/:id/tasks/new",
+  ensureAuthenticated,
   taskController.showNewTaskForm
 );
 
 // Save task
 router.post(
   "/clients/:id/tasks/new",
+  ensureAuthenticated,
   taskController.createTask
 );
 
