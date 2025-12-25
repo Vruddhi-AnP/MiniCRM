@@ -1,25 +1,4 @@
 
-// const express = require("express");
-// const router = express.Router();
-// const taskController = require("../controllers/taskController");
-
-// // List tasks
-// router.get("/tasks", taskController.listTasks);
-
-// // New task form
-// router.get(
-//   "/clients/:id/tasks/new",
-//   taskController.showNewTaskForm
-// );
-
-// // Save task
-// router.post(
-//   "/clients/:id/tasks/new",
-//   taskController.createTask
-// );
-
-// module.exports = router;
-
 const express = require("express");
 const router = express.Router();
 const taskController = require("../controllers/taskController");

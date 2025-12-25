@@ -1,13 +1,3 @@
-// const express = require("express");
-// const router = express.Router();
-
-// const dashboardController = require("../controllers/dashboardController");
-// const { ensureAuthenticated } = require("../middleware/authMiddleware");
-
-// router.get("/dashboard", ensureAuthenticated, dashboardController.getDashboardData);
-
-// module.exports = router;
-
 
 const express = require("express");
 const router = express.Router();
