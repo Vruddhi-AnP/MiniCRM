@@ -37,22 +37,27 @@
     </div>
   </div>
 
-  <!-- ✅ QUICK ACTION BUTTONS (NEW TASK + NEW INVOICE) -->
-  <div class="d-flex gap-2 mb-4">
-    <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-outline-primary">
-      + Add Task
-    </a>
-    <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-outline-success">
-      + Add Invoice
-    </a>
-  </div>
+  <!-- QUICK ACTION BUTTONS (ADMIN + SUPERADMIN ONLY) -->
+  <% if (user && user.role !== 'user') { %>
+    <div class="d-flex gap-2 mb-4">
+      <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-outline-primary">
+        + Add Task
+      </a>
+      <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-outline-success">
+        + Add Invoice
+      </a>
+    </div>
+  <% } %>
 
   <!-- Contacts -->
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <b>Contacts</b>
-      <a href="/clients/<%= client.id %>/contacts/new"
-         class="btn btn-sm btn-primary">+ Add</a>
+      <% if (user && user.role !== 'user') { %>
+        <a href="/clients/<%= client.id %>/contacts/new" class="btn btn-sm btn-primary">
+          + Add
+        </a>
+      <% } %>
     </div>
     <div class="card-body p-0">
       <table class="table table-striped mb-0">
@@ -74,8 +79,11 @@
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <b>Tasks</b>
-      <a href="/clients/<%= client.id %>/tasks/new"
-         class="btn btn-sm btn-primary">+ Add</a>
+      <% if (user && user.role !== 'user') { %>
+        <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-sm btn-primary">
+          + Add
+        </a>
+      <% } %>
     </div>
     <div class="card-body p-0">
       <table class="table table-striped mb-0">
@@ -101,8 +109,11 @@
   <div class="card shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
       <b>Invoices</b>
-      <a href="/clients/<%= client.id %>/invoices/new"
-         class="btn btn-sm btn-primary">+ Add</a>
+      <% if (user && user.role !== 'user') { %>
+        <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-sm btn-primary">
+          + Add
+        </a>
+      <% } %>
     </div>
 
     <div class="card-body p-0">
@@ -111,19 +122,16 @@
           <th>Amount</th>
           <th>Status</th>
         </tr>
-
         <% invoices.forEach(i => { %>
           <tr>
             <td>₹<%= i.amount %></td>
             <td>
-              <span class="badge 
-                <%= i.status === "paid" ? "bg-success" : "bg-warning text-dark" %>">
+              <span class="badge <%= i.status === 'paid' ? 'bg-success' : 'bg-warning text-dark' %>">
                 <%= i.status %>
               </span>
             </td>
           </tr>
         <% }) %>
-
       </table>
     </div>
   </div>
