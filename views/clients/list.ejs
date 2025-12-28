@@ -1,72 +1,81 @@
 <%- include("../layout", {
   body: `
-    <!-- ============ HEADER + ADD BUTTON ============ -->
+    <!-- ============ PAGE HEADER ============ -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Clients</h2>
+      <div>
+        <h2 class="mb-0">Clients</h2>
+        <small class="text-muted">Manage all your clients in one place</small>
+      </div>
+
       <a href="/clients/new" class="btn btn-success">
         + Add New Client
       </a>
     </div>
 
     <!-- ================= STATUS FILTER ================= -->
-    <form method="GET" action="/clients" class="mb-3">
-      <label class="me-2">Filter by Status:</label>
+    <div class="card mb-4">
+      <div class="card-body py-3">
+        <form method="GET" action="/clients" class="d-flex align-items-center gap-2">
+          <label class="fw-semibold mb-0">Filter:</label>
 
-      <select name="status"
-              onchange="this.form.submit()"
-              class="form-select w-auto d-inline">
+          <select
+            name="status"
+            onchange="this.form.submit()"
+            class="form-select w-auto"
+          >
+            <option value="" ${filterStatus === "" ? "selected" : ""}>
+              All
+            </option>
 
-        <option value=""
-          ${filterStatus === "" ? "selected" : ""}>
-          All
-        </option>
+            <option value="active" ${filterStatus === "active" ? "selected" : ""}>
+              Active
+            </option>
 
-        <option value="active"
-          ${filterStatus === "active" ? "selected" : ""}>
-          Active
-        </option>
-
-        <option value="inactive"
-          ${filterStatus === "inactive" ? "selected" : ""}>
-          Inactive
-        </option>
-
-      </select>
-    </form>
+            <option value="inactive" ${filterStatus === "inactive" ? "selected" : ""}>
+              Inactive
+            </option>
+          </select>
+        </form>
+      </div>
+    </div>
 
     <!-- ================= CLIENTS TABLE ================= -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
 
-      <tbody>
-        ${
-          clients.length === 0
-            ? `<tr><td colspan="3">No clients found</td></tr>`
-            : clients.map(c => `
-                <tr>
-                  <td>${c.name}</td>
-                  <td>
-                    <span class="badge ${
-                      c.status === "active" ? "bg-success" : "bg-secondary"
-                    }">
-                      ${c.status}
-                    </span>
-                  </td>
-                  <td>
-                    <a href="/clients/${c.id}" class="btn btn-sm btn-primary">
-                      View
-                    </a>
-                  </td>
-                </tr>
-              `).join("")
-        }
-      </tbody>
-    </table>
+          <tbody>
+            ${
+              clients.length === 0
+                ? `<tr><td colspan="3" class="text-center py-4">No clients found</td></tr>`
+                : clients.map(c => `
+                    <tr>
+                      <td>${c.name}</td>
+                      <td>
+                        <span class="badge ${
+                          c.status === "active" ? "bg-success" : "bg-secondary"
+                        } text-capitalize">
+                          ${c.status}
+                        </span>
+                      </td>
+                      <td class="text-end">
+                        <a href="/clients/${c.id}" class="btn btn-sm btn-outline-primary">
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  `).join("")
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   `
 }) %>

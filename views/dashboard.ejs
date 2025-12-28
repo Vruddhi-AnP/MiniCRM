@@ -1,43 +1,45 @@
 <%- include("layout", {
   body: `
-    <h1>Welcome, ${user.email}</h1>
+    <!-- ================= HEADER ================= -->
+    <h1 class="mb-1">Welcome, ${user.email}</h1>
+    <p class="text-muted mb-4">Here’s what’s happening in your CRM today</p>
 
-    <h2 class="mb-4">Dashboard Summary</h2>
+    <h3 class="mb-4">Dashboard Overview</h3>
 
     <!-- ================= CARDS ================= -->
     <div class="row mb-4">
       <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">Active Clients</h5>
-            <h2>${clients}</h2>
+            <h6 class="text-muted">Active Clients</h6>
+            <h2 class="fw-bold">${clients}</h2>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">Open Tasks</h5>
-            <h2>${tasks}</h2>
+            <h6 class="text-muted">Open Tasks</h6>
+            <h2 class="fw-bold">${tasks}</h2>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card text-center shadow-sm">
           <div class="card-body">
-            <h5 class="card-title">Total Invoices</h5>
-            <h2>${invoices.length}</h2>
+            <h6 class="text-muted">Total Invoices</h6>
+            <h2 class="fw-bold">${invoices.length}</h2>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ================= LATEST CLIENTS ================= -->
-    <h4>Latest Clients</h4>
-    <table class="table table-bordered">
-      <thead>
+    <h4 class="mb-3">Latest Clients</h4>
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
         <tr>
           <th>Name</th>
           <th>Email</th>
@@ -60,9 +62,9 @@
     </table>
 
     <!-- ================= UPCOMING TASKS ================= -->
-    <h4 class="mt-4">Upcoming Tasks</h4>
-    <table class="table table-bordered">
-      <thead>
+    <h4 class="mt-5 mb-3">Upcoming Tasks</h4>
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
         <tr>
           <th>Title</th>
           <th>Client</th>

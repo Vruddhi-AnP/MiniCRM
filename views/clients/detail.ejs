@@ -8,27 +8,46 @@
 
 <div class="container my-4">
 
-  <!-- Page Header -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="text-danger mb-0">Client Details</h2>
+  <!-- ================= PAGE HEADER ================= -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Client Details</h2>
     <a href="/clients" class="btn btn-outline-secondary btn-sm">← Back</a>
   </div>
 
-  <!-- Client Info -->
-  <div class="card shadow-sm mb-3">
+  <!-- ================= CLIENT INFO CARD ================= -->
+  <div class="card shadow-sm mb-4 position-relative">
+
+    <% if (user && user.role !== 'user') { %>
+      <div class="position-absolute d-flex gap-2" style="top: 15px; right: 15px;">
+        <a href="/clients/<%= client.id %>/edit" class="btn btn-sm btn-warning">
+          ✏️ Edit
+        </a>
+
+        <form
+          action="/clients/<%= client.id %>/delete"
+          method="POST"
+          onsubmit="return confirm('Are you sure you want to deactivate this client?');"
+        >
+          <button type="submit" class="btn btn-sm btn-danger">
+            🗑 Delete
+          </button>
+        </form>
+      </div>
+    <% } %>
+
     <div class="card-body">
       <h4 class="mb-3"><%= client.name %></h4>
 
       <div class="row">
         <div class="col-md-6">
-          <p><b>Company:</b> <%= client.company || "-" %></p>
-          <p><b>Email:</b> <%= client.email || "-" %></p>
+          <p class="mb-1"><b>Company:</b> <%= client.company || "-" %></p>
+          <p class="mb-1"><b>Email:</b> <%= client.email || "-" %></p>
         </div>
         <div class="col-md-6">
-          <p><b>Phone:</b> <%= client.phone || "-" %></p>
-          <p>
+          <p class="mb-1"><b>Phone:</b> <%= client.phone || "-" %></p>
+          <p class="mb-1">
             <b>Status:</b>
-            <span class="badge bg-success text-capitalize">
+            <span class="badge <%= client.status === 'active' ? 'bg-success' : 'bg-secondary' %> text-capitalize">
               <%= client.status %>
             </span>
           </p>
@@ -37,101 +56,90 @@
     </div>
   </div>
 
-  <!-- QUICK ACTION BUTTONS (ADMIN + SUPERADMIN ONLY) -->
+  <!-- ================= QUICK ACTIONS ================= -->
   <% if (user && user.role !== 'user') { %>
     <div class="d-flex gap-2 mb-4">
-      <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-outline-primary">
+      <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-outline-primary btn-sm">
         + Add Task
       </a>
-      <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-outline-success">
+      <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-outline-success btn-sm">
         + Add Invoice
       </a>
     </div>
   <% } %>
 
-  <!-- Contacts -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <b>Contacts</b>
-      <% if (user && user.role !== 'user') { %>
-        <a href="/clients/<%= client.id %>/contacts/new" class="btn btn-sm btn-primary">
-          + Add
-        </a>
-      <% } %>
-    </div>
-    <div class="card-body p-0">
-      <table class="table table-striped mb-0">
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-        </tr>
-        <% contacts.forEach(c => { %>
-          <tr>
-            <td><%= c.name %></td>
-            <td><%= c.email %></td>
-          </tr>
-        <% }) %>
-      </table>
-    </div>
-  </div>
-
-  <!-- Tasks -->
+  <!-- ================= TASKS ================= -->
   <div class="card shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <b>Tasks</b>
-      <% if (user && user.role !== 'user') { %>
-        <a href="/clients/<%= client.id %>/tasks/new" class="btn btn-sm btn-primary">
-          + Add
-        </a>
-      <% } %>
     </div>
+
     <div class="card-body p-0">
       <table class="table table-striped mb-0">
-        <tr>
-          <th>Title</th>
-          <th>Status</th>
-        </tr>
-        <% tasks.forEach(t => { %>
+        <thead>
           <tr>
-            <td><%= t.title %></td>
-            <td>
-              <span class="badge bg-warning text-dark text-capitalize">
-                <%= t.status.replace("_", " ") %>
-              </span>
-            </td>
+            <th>Title</th>
+            <th>Status</th>
           </tr>
-        <% }) %>
+        </thead>
+        <tbody>
+          <% if (tasks.length === 0) { %>
+            <tr>
+              <td colspan="2" class="text-center text-muted py-3">
+                No tasks added yet
+              </td>
+            </tr>
+          <% } %>
+
+          <% tasks.forEach(t => { %>
+            <tr>
+              <td><%= t.title %></td>
+              <td>
+                <span class="badge bg-warning text-dark text-capitalize">
+                  <%= t.status.replace("_", " ") %>
+                </span>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Invoices -->
+  <!-- ================= INVOICES ================= -->
   <div class="card shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
       <b>Invoices</b>
-      <% if (user && user.role !== 'user') { %>
-        <a href="/clients/<%= client.id %>/invoices/new" class="btn btn-sm btn-primary">
-          + Add
-        </a>
-      <% } %>
     </div>
 
     <div class="card-body p-0">
       <table class="table table-striped mb-0">
-        <tr>
-          <th>Amount</th>
-          <th>Status</th>
-        </tr>
-        <% invoices.forEach(i => { %>
+        <thead>
           <tr>
-            <td>₹<%= i.amount %></td>
-            <td>
-              <span class="badge <%= i.status === 'paid' ? 'bg-success' : 'bg-warning text-dark' %>">
-                <%= i.status %>
-              </span>
-            </td>
+            <th>Amount</th>
+            <th>Status</th>
           </tr>
-        <% }) %>
+        </thead>
+        <tbody>
+          <% if (invoices.length === 0) { %>
+            <tr>
+              <td colspan="2" class="text-center text-muted py-3">
+                No invoices created yet
+              </td>
+            </tr>
+          <% } %>
+
+          <% invoices.forEach(i => { %>
+            <tr>
+              <td>₹<%= i.amount %></td>
+              <td>
+                <span class="badge <%= i.status === 'paid' ? 'bg-success' : 'bg-warning text-dark' %>">
+                  <%= i.status %>
+                </span>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
       </table>
     </div>
   </div>
