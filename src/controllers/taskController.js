@@ -7,17 +7,29 @@ const db = require("../db");
 // ==============================
 exports.listTasks = (req, res) => {
   const status = req.query.status;
+  const search = req.query.q || "";
 
   let sql = `
     SELECT tasks.*, clients.name AS client_name
     FROM tasks
     LEFT JOIN clients ON tasks.client_id = clients.id
   `;
+
   let params = [];
+  let conditions = [];
 
   if (status) {
-    sql += " WHERE tasks.status = ?";
+    conditions.push("tasks.status = ?");
     params.push(status);
+  }
+
+  if (search) {
+    conditions.push("tasks.title LIKE ?");
+    params.push(`%${search}%`);
+  }
+
+  if (conditions.length > 0) {
+    sql += " WHERE " + conditions.join(" AND ");
   }
 
   db.all(sql, params, (err, tasks) => {
@@ -29,6 +41,7 @@ exports.listTasks = (req, res) => {
     res.render("tasks/list", {
       tasks,
       currentStatus: status || "all",
+      searchQuery: search,
     });
   });
 };
@@ -39,7 +52,6 @@ exports.listTasks = (req, res) => {
 // ==============================
 exports.showNewTaskForm = (req, res) => {
   const clientId = req.params.id;
-
   res.render("tasks/form", { clientId });
 };
 

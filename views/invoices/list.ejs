@@ -7,6 +7,17 @@
       </p>
     </div>
 
+    <!-- SEARCH INVOICE -->
+    <form method="GET" action="/invoices" class="mb-3">
+      <input
+        type="text"
+        name="q"
+        value="${searchQuery || ""}"
+        placeholder="Search by invoice no or client..."
+        class="form-control w-25"
+      />
+    </form>
+
     <div class="card shadow-sm">
       <div class="card-body p-0">
         <table class="table table-hover mb-0">

@@ -7,13 +7,24 @@ const db = require("../db");
 // ==============================
 exports.listClients = (req, res) => {
   const status = req.query.status || "";
+  const search = req.query.q || "";
 
   let sql = "SELECT * FROM clients";
   let params = [];
+  let conditions = [];
 
   if (status) {
-    sql += " WHERE status = ?";
+    conditions.push("status = ?");
     params.push(status);
+  }
+
+  if (search) {
+    conditions.push("(name LIKE ? OR email LIKE ?)");
+    params.push(`%${search}%`, `%${search}%`);
+  }
+
+  if (conditions.length > 0) {
+    sql += " WHERE " + conditions.join(" AND ");
   }
 
   db.all(sql, params, (err, clients) => {
@@ -25,6 +36,7 @@ exports.listClients = (req, res) => {
     res.render("clients/list", {
       clients: clients || [],
       filterStatus: status,
+      searchQuery: search,
     });
   });
 };
@@ -34,7 +46,6 @@ exports.listClients = (req, res) => {
 // GET /clients/new
 // ==============================
 exports.showNewClientForm = (req, res) => {
-  // ✅ FIX: pass both isEdit + client
   res.render("clients/form", {
     isEdit: false,
     client: null
@@ -199,7 +210,6 @@ exports.deleteClient = (req, res) => {
     res.redirect("/clients");
   });
 };
-
 
 
 

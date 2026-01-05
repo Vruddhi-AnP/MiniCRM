@@ -8,6 +8,17 @@
       </p>
     </div>
 
+    <!-- SEARCH TASK -->
+    <form method="GET" action="/tasks" class="mb-3">
+      <input
+        type="text"
+        name="q"
+        value="${searchQuery || ""}"
+        placeholder="Search tasks by title..."
+        class="form-control w-25"
+      />
+    </form>
+
     <!-- TASKS TABLE -->
     <div class="card shadow-sm">
       <div class="card-body p-0">

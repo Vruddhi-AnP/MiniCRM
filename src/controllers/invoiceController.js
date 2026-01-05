@@ -7,17 +7,31 @@ const db = require("../db");
 // ==============================
 exports.listInvoices = (req, res) => {
   const status = req.query.status;
+  const search = req.query.q || "";
 
   let sql = `
     SELECT invoices.*, clients.name AS client_name
     FROM invoices
     LEFT JOIN clients ON invoices.client_id = clients.id
   `;
+
   let params = [];
+  let conditions = [];
 
   if (status) {
-    sql += " WHERE invoices.status = ?";
+    conditions.push("invoices.status = ?");
     params.push(status);
+  }
+
+  if (search) {
+    conditions.push(
+      "(clients.name LIKE ? OR invoices.invoice_number LIKE ?)"
+    );
+    params.push(`%${search}%`, `%${search}%`);
+  }
+
+  if (conditions.length > 0) {
+    sql += " WHERE " + conditions.join(" AND ");
   }
 
   db.all(sql, params, (err, invoices) => {
@@ -29,6 +43,7 @@ exports.listInvoices = (req, res) => {
     res.render("invoices/list", {
       invoices,
       currentStatus: status || "all",
+      searchQuery: search,
     });
   });
 };
@@ -39,8 +54,6 @@ exports.listInvoices = (req, res) => {
 // ==============================
 exports.showNewInvoiceForm = (req, res) => {
   const clientId = req.params.id;
-
-  // ✅ CLEAN & CORRECT: directly render form.ejs
   res.render("invoices/form", { clientId });
 };
 
@@ -56,19 +69,49 @@ exports.createInvoice = (req, res) => {
     return res.send("Invoice amount is required");
   }
 
-  const sql = `
-    INSERT INTO invoices (amount, status, client_id)
-    VALUES (?, ?, ?)
+  // 🔑 STEP 1: Get last invoice number
+  const year = new Date().getFullYear();
+
+  const getLastInvoiceSql = `
+    SELECT invoice_number
+    FROM invoices
+    WHERE invoice_number LIKE ?
+    ORDER BY id DESC
+    LIMIT 1
   `;
 
-  db.run(sql, [amount, status || "pending", clientId], function (err) {
+  db.get(getLastInvoiceSql, [`INV-${year}-%`], (err, row) => {
     if (err) {
       console.error(err);
       return res.send("DB error");
     }
 
-    // 🔁 redirect back to client detail page
-    res.redirect(`/clients/${clientId}`);
+    let nextNumber = 1;
+
+    if (row && row.invoice_number) {
+      const lastSeq = parseInt(row.invoice_number.split("-")[2]);
+      nextNumber = lastSeq + 1;
+    }
+
+    const invoiceNumber = `INV-${year}-${String(nextNumber).padStart(3, "0")}`;
+
+    // 🔑 STEP 2: Insert invoice with generated invoice_number
+    const insertSql = `
+      INSERT INTO invoices (invoice_number, amount, status, client_id)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    db.run(
+      insertSql,
+      [invoiceNumber, amount, status || "pending", clientId],
+      function (err) {
+        if (err) {
+          console.error(err);
+          return res.send("DB error");
+        }
+
+        res.redirect(`/clients/${clientId}`);
+      }
+    );
   });
 };
-

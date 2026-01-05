@@ -1,5 +1,14 @@
 <%- include("layout", {
   body: `
+    ${(() => {
+      const formatStatus = (status) => {
+        if (status === "todo") return "To Do";
+        if (status === "in_progress") return "In Progress";
+        if (status === "completed") return "Completed";
+        return status;
+      };
+
+      return `
     <!-- ================= HEADER ================= -->
     <h1 class="mb-1">Welcome, ${user.email}</h1>
     <p class="text-muted mb-4">Here’s what’s happening in your CRM today</p>
@@ -8,7 +17,7 @@
 
     <!-- ================= CARDS ================= -->
     <div class="row mb-4">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card text-center shadow-sm">
           <div class="card-body">
             <h6 class="text-muted">Active Clients</h6>
@@ -17,7 +26,7 @@
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card text-center shadow-sm">
           <div class="card-body">
             <h6 class="text-muted">Open Tasks</h6>
@@ -26,11 +35,20 @@
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card text-center shadow-sm">
           <div class="card-body">
-            <h6 class="text-muted">Total Invoices</h6>
-            <h2 class="fw-bold">${invoices.length}</h2>
+            <h6 class="text-muted">Pending Invoices</h6>
+            <h2 class="fw-bold">${pendingInvoices}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+          <div class="card-body">
+            <h6 class="text-muted">Overdue Invoices</h6>
+            <h2 class="fw-bold">${overdueInvoices}</h2>
           </div>
         </div>
       </div>
@@ -54,7 +72,7 @@
                 <tr>
                   <td>${c.name}</td>
                   <td>${c.email || "-"}</td>
-                  <td>${c.status}</td>
+                  <td>${formatStatus(c.status)}</td>
                 </tr>
               `).join("")
         }
@@ -80,7 +98,7 @@
                 <tr>
                   <td>${t.title}</td>
                   <td>${t.client_name || "-"}</td>
-                  <td>${t.status}</td>
+                  <td>${formatStatus(t.status)}</td>
                   <td>
                     ${
                       t.due_date
@@ -93,5 +111,7 @@
         }
       </tbody>
     </table>
+      `;
+    })()}
   `
 }) %>

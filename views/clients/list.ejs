@@ -12,10 +12,10 @@
       </a>
     </div>
 
-    <!-- ================= STATUS FILTER ================= -->
+    <!-- ================= FILTER + SEARCH ================= -->
     <div class="card mb-4">
       <div class="card-body py-3">
-        <form method="GET" action="/clients" class="d-flex align-items-center gap-2">
+        <form method="GET" action="/clients" class="d-flex align-items-center gap-3">
           <label class="fw-semibold mb-0">Filter:</label>
 
           <select
@@ -35,6 +35,19 @@
               Inactive
             </option>
           </select>
+
+          <!-- 🔍 SEARCH CLIENT -->
+          <input
+            type="text"
+            name="q"
+            value="${searchQuery || ""}"
+            placeholder="Search by name or email"
+            class="form-control w-25"
+          />
+
+          <button type="submit" class="btn btn-outline-secondary">
+            Search
+          </button>
         </form>
       </div>
     </div>

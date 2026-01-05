@@ -34,6 +34,15 @@ exports.getDashboardData = async (req, res) => {
       "SELECT COUNT(*) AS total FROM tasks"
     );
 
+    // ===== INVOICE COUNTS (REAL DATA) =====
+    const pendingInvoices = await runGet(
+      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'Pending'"
+    );
+
+    const overdueInvoices = await runGet(
+      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'Overdue'"
+    );
+
     // ===== LATEST CLIENTS (LAST 5) =====
     const latestClients = await runAll(
       "SELECT name, email, status FROM clients ORDER BY id DESC LIMIT 5"
@@ -58,19 +67,13 @@ exports.getDashboardData = async (req, res) => {
       LIMIT 5
     `);
 
-    // ===== DUMMY INVOICES =====
-    const invoices = [
-      { status: "pending", total: 1000 },
-      { status: "paid", total: 2000 },
-      { status: "overdue", total: 500 }
-    ];
-
     // ===== RENDER DASHBOARD =====
     res.render("dashboard", {
       user: req.session.user,
       clients: totalClients.total,
       tasks: totalTasks.total,
-      invoices: invoices,
+      pendingInvoices: pendingInvoices.total,
+      overdueInvoices: overdueInvoices.total,
       latestClients: latestClients,
       upcomingTasks: upcomingTasks
     });
