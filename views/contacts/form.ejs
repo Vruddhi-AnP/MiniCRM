@@ -24,9 +24,32 @@
       <input type="email" name="email" class="form-control">
     </div>
 
-    <div class="mb-4">
+    <div class="mb-3">
       <label class="form-label">Phone</label>
       <input type="text" name="phone" class="form-control">
+    </div>
+
+    <!-- ✅ NEW: Role -->
+    <div class="mb-3">
+      <label class="form-label">Role</label>
+      <select name="role" class="form-select">
+        <option value="">Select role</option>
+        <option value="Primary">Primary</option>
+        <option value="Billing">Billing</option>
+        <option value="Technical">Technical</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <!-- ✅ NEW: Notes -->
+    <div class="mb-4">
+      <label class="form-label">Notes</label>
+      <textarea
+        name="notes"
+        class="form-control"
+        rows="3"
+        placeholder="Any additional information..."
+      ></textarea>
     </div>
 
     <div class="d-flex justify-content-end">

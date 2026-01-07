@@ -90,12 +90,14 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Role</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <% if (contacts.length === 0) { %>
             <tr>
-              <td colspan="3" class="text-center text-muted py-3">
+              <td colspan="5" class="text-center text-muted py-3">
                 No contacts added yet
               </td>
             </tr>
@@ -106,6 +108,14 @@
               <td><%= c.name %></td>
               <td><%= c.email || "-" %></td>
               <td><%= c.phone || "-" %></td>
+              <td>
+                <% if (c.role) { %>
+                  <span class="badge bg-info text-dark"><%= c.role %></span>
+                <% } else { %>
+                  -
+                <% } %>
+              </td>
+              <td><%= c.notes || "-" %></td>
             </tr>
           <% }) %>
         </tbody>
@@ -192,3 +202,6 @@
 </div>
 </body>
 </html>
+
+
+
