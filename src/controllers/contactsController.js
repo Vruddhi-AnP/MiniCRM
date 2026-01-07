@@ -1,45 +1,3 @@
-// const db = require("../db");
-
-// // ==============================
-// // SHOW NEW CONTACT FORM
-// // GET /clients/:id/contacts/new
-// // ==============================
-// exports.showNewContactForm = (req, res) => {
-//   const clientId = req.params.id;
-
-//   res.render("contacts/form", {
-//     clientId
-//   });
-// };
-
-// // ==============================
-// // CREATE CONTACT
-// // POST /clients/:id/contacts/new
-// // ==============================
-// exports.createContact = (req, res) => {
-//   const clientId = req.params.id;
-//   const { name, email, phone } = req.body;
-
-//   if (!name) {
-//     return res.send("Contact name is required");
-//   }
-
-//   const sql = `
-//     INSERT INTO contacts (name, email, phone, client_id)
-//     VALUES (?, ?, ?, ?)
-//   `;
-
-//   db.run(sql, [name, email || "", phone || "", clientId], function (err) {
-//     if (err) {
-//       console.error(err);
-//       return res.send("DB error while creating contact");
-//     }
-
-//     // redirect back to client detail
-//     res.redirect(`/clients/${clientId}`);
-//   });
-// };
-
 
 const db = require("../db");
 
@@ -122,3 +80,61 @@ exports.createContact = (req, res) => {
       res.send("DB error while creating contact");
     });
 };
+
+
+// ==============================
+// SHOW EDIT CONTACT FORM
+// GET /clients/:clientId/contacts/:contactId/edit
+// ==============================
+exports.showEditContactForm = (req, res) => {
+  const { clientId, contactId } = req.params;
+
+  db.get(
+    "SELECT * FROM contacts WHERE id = ?",
+    [contactId],
+    (err, contact) => {
+      if (err || !contact) {
+        return res.send("Contact not found");
+      }
+
+      res.render("contacts/form", {
+        clientId,
+        contact,
+        isEdit: true
+      });
+    }
+  );
+};
+
+// ==============================
+// UPDATE CONTACT
+// POST /clients/:clientId/contacts/:contactId/edit
+// ==============================
+exports.updateContact = (req, res) => {
+  const { clientId, contactId } = req.params;
+  const { name, email, phone, role, notes } = req.body;
+
+  if (!name) {
+    return res.send("Contact name is required");
+  }
+
+  const sql = `
+    UPDATE contacts
+    SET name = ?, email = ?, phone = ?, role = ?, notes = ?
+    WHERE id = ?
+  `;
+
+  db.run(
+    sql,
+    [name, email || "", phone || "", role || null, notes || null, contactId],
+    function (err) {
+      if (err) {
+        console.error(err);
+        return res.send("DB error while updating contact");
+      }
+
+      res.redirect(`/clients/${clientId}`);
+    }
+  );
+};
+
