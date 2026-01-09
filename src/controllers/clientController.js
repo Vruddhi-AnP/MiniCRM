@@ -1,4 +1,219 @@
 
+// const db = require("../db");
+
+// // ==============================
+// // LIST CLIENTS
+// // GET /clients
+// // ==============================
+// exports.listClients = (req, res) => {
+//   const status = req.query.status || "";
+//   const search = req.query.q || "";
+
+//   let sql = "SELECT * FROM clients";
+//   let params = [];
+//   let conditions = [];
+
+//   if (status) {
+//     conditions.push("status = ?");
+//     params.push(status);
+//   }
+
+//   if (search) {
+//     conditions.push("(name LIKE ? OR email LIKE ?)");
+//     params.push(`%${search}%`, `%${search}%`);
+//   }
+
+//   if (conditions.length > 0) {
+//     sql += " WHERE " + conditions.join(" AND ");
+//   }
+
+//   db.all(sql, params, (err, clients) => {
+//     if (err) {
+//       console.error(err);
+//       return res.send("DB error");
+//     }
+
+//     res.render("clients/list", {
+//       clients: clients || [],
+//       filterStatus: status,
+//       searchQuery: search,
+//     });
+//   });
+// };
+
+// // ==============================
+// // SHOW NEW CLIENT FORM
+// // GET /clients/new
+// // ==============================
+// exports.showNewClientForm = (req, res) => {
+//   res.render("clients/form", {
+//     isEdit: false,
+//     client: null
+//   });
+// };
+
+// // ==============================
+// // CREATE CLIENT
+// // POST /clients/new
+// // ==============================
+// exports.createClient = (req, res) => {
+//   const { name, email, phone, status } = req.body;
+
+//   if (!name) {
+//     return res.send("Client name is required");
+//   }
+
+//   const sql = `
+//     INSERT INTO clients (name, email, phone, status)
+//     VALUES (?, ?, ?, ?)
+//   `;
+
+//   const params = [
+//     name,
+//     email || "",
+//     phone || "",
+//     status || "active",
+//   ];
+
+//   db.run(sql, params, function (err) {
+//     if (err) {
+//       console.error(err);
+//       return res.send("DB error while creating client");
+//     }
+
+//     res.redirect("/clients");
+//   });
+// };
+
+// // ==============================
+// // CLIENT DETAIL
+// // GET /clients/:id
+// // ==============================
+// exports.getClientDetail = (req, res) => {
+//   const clientId = req.params.id;
+
+//   db.get("SELECT * FROM clients WHERE id = ?", [clientId], (err, client) => {
+//     if (err || !client) return res.send("Client not found");
+
+//     db.all(
+//       "SELECT * FROM contacts WHERE client_id = ?",
+//       [clientId],
+//       (err, contacts) => {
+//         if (err) return res.send("Contacts error");
+
+//         db.all(
+//           "SELECT * FROM tasks WHERE client_id = ?",
+//           [clientId],
+//           (err, tasks) => {
+//             if (err) return res.send("Tasks error");
+
+//             db.all(
+//               "SELECT * FROM invoices WHERE client_id = ?",
+//               [clientId],
+//               (err, invoices) => {
+//                 if (err) return res.send("Invoices error");
+
+//                 res.render("clients/detail", {
+//                   client,
+//                   contacts,
+//                   tasks,
+//                   invoices,
+//                 });
+//               }
+//             );
+//           }
+//         );
+//       }
+//     );
+//   });
+// };
+
+// // ==============================
+// // SHOW EDIT CLIENT FORM
+// // GET /clients/:id/edit
+// // ==============================
+// exports.showEditClientForm = (req, res) => {
+//   const clientId = req.params.id;
+
+//   db.get("SELECT * FROM clients WHERE id = ?", [clientId], (err, client) => {
+//     if (err) {
+//       console.error(err);
+//       return res.send("DB error");
+//     }
+
+//     if (!client) {
+//       return res.send("Client not found");
+//     }
+
+//     res.render("clients/form", {
+//       client,
+//       isEdit: true,
+//     });
+//   });
+// };
+
+// // ==============================
+// // UPDATE CLIENT
+// // POST /clients/:id/edit
+// // ==============================
+// exports.updateClient = (req, res) => {
+//   const clientId = req.params.id;
+//   const { name, email, phone, status } = req.body;
+
+//   if (!name) {
+//     return res.send("Client name is required");
+//   }
+
+//   const sql = `
+//     UPDATE clients
+//     SET name = ?, email = ?, phone = ?, status = ?
+//     WHERE id = ?
+//   `;
+
+//   const params = [
+//     name,
+//     email || "",
+//     phone || "",
+//     status || "active",
+//     clientId,
+//   ];
+
+//   db.run(sql, params, function (err) {
+//     if (err) {
+//       console.error(err);
+//       return res.send("DB error while updating client");
+//     }
+
+//     res.redirect(`/clients/${clientId}`);
+//   });
+// };
+
+// // ==============================
+// // SOFT DELETE CLIENT (MAKE INACTIVE)
+// // POST /clients/:id/delete
+// // ==============================
+// exports.deleteClient = (req, res) => {
+//   const clientId = req.params.id;
+
+//   const sql = `
+//     UPDATE clients
+//     SET status = 'inactive'
+//     WHERE id = ?
+//   `;
+
+//   db.run(sql, [clientId], function (err) {
+//     if (err) {
+//       console.error(err);
+//       return res.send("DB error while deactivating client");
+//     }
+
+//     res.redirect("/clients");
+//   });
+// };
+
+
+
+
 const db = require("../db");
 
 // ==============================
@@ -48,7 +263,7 @@ exports.listClients = (req, res) => {
 exports.showNewClientForm = (req, res) => {
   res.render("clients/form", {
     isEdit: false,
-    client: null
+    client: null,
   });
 };
 
@@ -57,15 +272,23 @@ exports.showNewClientForm = (req, res) => {
 // POST /clients/new
 // ==============================
 exports.createClient = (req, res) => {
-  const { name, email, phone, status } = req.body;
+  const {
+    name,
+    email,
+    phone,
+    status,
+    type,
+    sector,
+    city,
+  } = req.body;
 
   if (!name) {
     return res.send("Client name is required");
   }
 
   const sql = `
-    INSERT INTO clients (name, email, phone, status)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO clients (name, email, phone, status, type, sector, city)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   const params = [
@@ -73,6 +296,9 @@ exports.createClient = (req, res) => {
     email || "",
     phone || "",
     status || "active",
+    type || null,
+    sector || null,
+    city || null,
   ];
 
   db.run(sql, params, function (err) {
@@ -158,7 +384,15 @@ exports.showEditClientForm = (req, res) => {
 // ==============================
 exports.updateClient = (req, res) => {
   const clientId = req.params.id;
-  const { name, email, phone, status } = req.body;
+  const {
+    name,
+    email,
+    phone,
+    status,
+    type,
+    sector,
+    city,
+  } = req.body;
 
   if (!name) {
     return res.send("Client name is required");
@@ -166,7 +400,7 @@ exports.updateClient = (req, res) => {
 
   const sql = `
     UPDATE clients
-    SET name = ?, email = ?, phone = ?, status = ?
+    SET name = ?, email = ?, phone = ?, status = ?, type = ?, sector = ?, city = ?
     WHERE id = ?
   `;
 
@@ -175,6 +409,9 @@ exports.updateClient = (req, res) => {
     email || "",
     phone || "",
     status || "active",
+    type || null,
+    sector || null,
+    city || null,
     clientId,
   ];
 
@@ -189,7 +426,7 @@ exports.updateClient = (req, res) => {
 };
 
 // ==============================
-// SOFT DELETE CLIENT (MAKE INACTIVE)
+// SOFT DELETE CLIENT
 // POST /clients/:id/delete
 // ==============================
 exports.deleteClient = (req, res) => {
@@ -210,9 +447,5 @@ exports.deleteClient = (req, res) => {
     res.redirect("/clients");
   });
 };
-
-
-
-
 
 

@@ -42,9 +42,15 @@
         <div class="col-md-6">
           <p class="mb-1"><b>Company:</b> <%= client.company || "-" %></p>
           <p class="mb-1"><b>Email:</b> <%= client.email || "-" %></p>
-        </div>
-        <div class="col-md-6">
           <p class="mb-1"><b>Phone:</b> <%= client.phone || "-" %></p>
+        </div>
+
+        <div class="col-md-6">
+          <!-- ✅ NEW FIELDS (SAFE ADDITION) -->
+          <p class="mb-1"><b>Type:</b> <%= client.type || "-" %></p>
+          <p class="mb-1"><b>Sector:</b> <%= client.sector || "-" %></p>
+          <p class="mb-1"><b>City:</b> <%= client.city || "-" %></p>
+
           <p class="mb-1">
             <b>Status:</b>
             <span class="badge <%= client.status === 'active' ? 'bg-success' : 'bg-secondary' %> text-capitalize">
