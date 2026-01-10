@@ -85,3 +85,72 @@ exports.createTask = (req, res) => {
     }
   );
 };
+
+// ==============================
+// SHOW EDIT TASK FORM (SAFE ADD)
+// GET /tasks/:id/edit
+// ==============================
+exports.showEditTaskForm = (req, res) => {
+  const taskId = req.params.id;
+
+  db.get(
+    "SELECT * FROM tasks WHERE id = ?",
+    [taskId],
+    (err, task) => {
+      if (err || !task) {
+        console.error(err);
+        return res.status(404).send("Task not found");
+      }
+
+      res.render("tasks/form", {
+        task,
+        isEdit: true
+      });
+    }
+  );
+};
+
+// ==============================
+// UPDATE TASK (SAFE ADD)
+// POST /tasks/:id/edit
+// ==============================
+exports.updateTask = (req, res) => {
+  const taskId = req.params.id;
+  const { title, status, due_date } = req.body;
+
+  if (!title) {
+    return res.send("Task title is required");
+  }
+
+  // 🔹 First get client_id (SAFE)
+  db.get(
+    "SELECT client_id FROM tasks WHERE id = ?",
+    [taskId],
+    (err, task) => {
+      if (err || !task) {
+        console.error(err);
+        return res.send("Task not found");
+      }
+
+      const sql = `
+        UPDATE tasks
+        SET title = ?, status = ?, due_date = ?
+        WHERE id = ?
+      `;
+
+      db.run(
+        sql,
+        [title, status, due_date || null, taskId],
+        function (err) {
+          if (err) {
+            console.error(err);
+            return res.send("DB error");
+          }
+
+          // ✅ SAFE REDIRECT
+          res.redirect(`/clients/${task.client_id}`);
+        }
+      );
+    }
+  );
+};

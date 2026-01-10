@@ -1,4 +1,5 @@
 
+
 const express = require("express");
 const router = express.Router();
 const invoiceController = require("../controllers/invoiceController");
@@ -28,6 +29,24 @@ router.post(
   ensureAuthenticated,
   allowRoles("admin", "superadmin"),
   invoiceController.createInvoice
+);
+
+// ================== INVOICE EDIT (SAFE ADDITION) ==================
+
+// ❌ Edit invoice form (ADMIN + SUPERADMIN ONLY)
+router.get(
+  "/invoices/:id/edit",
+  ensureAuthenticated,
+  allowRoles("admin", "superadmin"),
+  invoiceController.showEditInvoiceForm
+);
+
+// ❌ Update invoice (ADMIN + SUPERADMIN ONLY)
+router.post(
+  "/invoices/:id/edit",
+  ensureAuthenticated,
+  allowRoles("admin", "superadmin"),
+  invoiceController.updateInvoice
 );
 
 module.exports = router;

@@ -2,15 +2,17 @@
   body: `
     <div class="container" style="max-width: 600px;">
 
-      <a href="/clients/${clientId}" class="btn btn-link mb-3">
+      <a href="${isEdit ? 'javascript:history.back()' : `/clients/${clientId}`}" class="btn btn-link mb-3">
         ← Back to Client
       </a>
 
-      <h2 class="mb-4">Add New Task</h2>
+      <h2 class="mb-4">
+        ${isEdit ? 'Edit Task' : 'Add New Task'}
+      </h2>
 
       <form
         method="POST"
-        action="/clients/${clientId}/tasks/new"
+        action="${isEdit ? `/tasks/${task.id}/edit` : `/clients/${clientId}/tasks/new`}"
         class="card p-4 shadow-sm"
       >
 
@@ -21,34 +23,42 @@
             name="title"
             class="form-control"
             placeholder="Enter task title"
+            value="${task ? task.title : ''}"
             required
           />
         </div>
 
-        <!-- ✅ NEW: DUE DATE FIELD -->
+        <!-- ✅ DUE DATE FIELD -->
         <div class="mb-3">
           <label class="form-label">Due Date</label>
           <input
             type="date"
             name="due_date"
             class="form-control"
+            value="${task && task.due_date ? task.due_date : ''}"
           />
         </div>
 
         <div class="mb-4">
           <label class="form-label">Status</label>
           <select name="status" class="form-select">
-            <option value="pending" selected>Pending</option>
-            <option value="completed">Completed</option>
+            <option value="pending" ${!task || task.status === 'pending' ? 'selected' : ''}>
+              Pending
+            </option>
+            <option value="completed" ${task && task.status === 'completed' ? 'selected' : ''}>
+              Completed
+            </option>
           </select>
         </div>
 
         <!-- ✅ PROFESSIONAL BUTTON ROW -->
         <div class="d-flex justify-content-end">
           <button type="submit" class="btn btn-primary me-2">
-            Save Task
+            ${isEdit ? 'Update Task' : 'Save Task'}
           </button>
-          <a href="/clients/${clientId}" class="btn btn-light">
+
+          <a href="${isEdit ? 'javascript:history.back()' : `/clients/${clientId}`}"
+             class="btn btn-light">
             Cancel
           </a>
         </div>

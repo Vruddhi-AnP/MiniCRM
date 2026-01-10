@@ -30,4 +30,22 @@ router.post(
   taskController.createTask
 );
 
+// ================== TASK EDIT (SAFE ADDITION) ==================
+
+// ❌ Edit task form (ADMIN + SUPERADMIN ONLY)
+router.get(
+  "/tasks/:id/edit",
+  ensureAuthenticated,
+  allowRoles("admin", "superadmin"),
+  taskController.showEditTaskForm
+);
+
+// ❌ Update task (ADMIN + SUPERADMIN ONLY)
+router.post(
+  "/tasks/:id/edit",
+  ensureAuthenticated,
+  allowRoles("admin", "superadmin"),
+  taskController.updateTask
+);
+
 module.exports = router;

@@ -46,7 +46,6 @@
         </div>
 
         <div class="col-md-6">
-          <!-- ✅ NEW FIELDS (SAFE ADDITION) -->
           <p class="mb-1"><b>Type:</b> <%= client.type || "-" %></p>
           <p class="mb-1"><b>Sector:</b> <%= client.sector || "-" %></p>
           <p class="mb-1"><b>City:</b> <%= client.city || "-" %></p>
@@ -80,10 +79,7 @@
       <b>Contacts</b>
 
       <% if (user && user.role !== 'user') { %>
-        <a
-          href="/clients/<%= client.id %>/contacts/new"
-          class="btn btn-sm btn-outline-primary"
-        >
+        <a href="/clients/<%= client.id %>/contacts/new" class="btn btn-sm btn-outline-primary">
           + Add Contact
         </a>
       <% } %>
@@ -125,10 +121,8 @@
               <td><%= c.notes || "-" %></td>
               <td>
                 <% if (user && user.role !== 'user') { %>
-                  <a
-                    href="/clients/<%= client.id %>/contacts/<%= c.id %>/edit"
-                    class="btn btn-sm btn-outline-warning"
-                  >
+                  <a href="/clients/<%= client.id %>/contacts/<%= c.id %>/edit"
+                     class="btn btn-sm btn-outline-warning">
                     Edit
                   </a>
                 <% } %>
@@ -152,12 +146,16 @@
           <tr>
             <th>Title</th>
             <th>Status</th>
+            <% if (user && user.role !== 'user') { %>
+              <th>Action</th>
+            <% } %>
           </tr>
         </thead>
         <tbody>
           <% if (tasks.length === 0) { %>
             <tr>
-              <td colspan="2" class="text-center text-muted py-3">
+              <td colspan="<%= user && user.role !== 'user' ? 3 : 2 %>"
+                  class="text-center text-muted py-3">
                 No tasks added yet
               </td>
             </tr>
@@ -171,6 +169,15 @@
                   <%= t.status.replace("_", " ") %>
                 </span>
               </td>
+
+              <% if (user && user.role !== 'user') { %>
+                <td>
+                  <a href="/tasks/<%= t.id %>/edit"
+                     class="btn btn-sm btn-outline-warning">
+                    Edit
+                  </a>
+                </td>
+              <% } %>
             </tr>
           <% }) %>
         </tbody>
@@ -190,12 +197,16 @@
           <tr>
             <th>Amount</th>
             <th>Status</th>
+            <% if (user && user.role !== 'user') { %>
+              <th>Action</th>
+            <% } %>
           </tr>
         </thead>
         <tbody>
           <% if (invoices.length === 0) { %>
             <tr>
-              <td colspan="2" class="text-center text-muted py-3">
+              <td colspan="<%= user && user.role !== 'user' ? 3 : 2 %>"
+                  class="text-center text-muted py-3">
                 No invoices created yet
               </td>
             </tr>
@@ -209,6 +220,15 @@
                   <%= i.status %>
                 </span>
               </td>
+
+              <% if (user && user.role !== 'user') { %>
+                <td>
+                  <a href="/invoices/<%= i.id %>/edit"
+                     class="btn btn-sm btn-outline-warning">
+                    Edit
+                  </a>
+                </td>
+              <% } %>
             </tr>
           <% }) %>
         </tbody>

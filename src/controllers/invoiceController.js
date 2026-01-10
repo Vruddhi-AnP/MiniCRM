@@ -69,7 +69,6 @@ exports.createInvoice = (req, res) => {
     return res.send("Invoice amount is required");
   }
 
-  // 🔑 STEP 1: Get last invoice number
   const year = new Date().getFullYear();
 
   const getLastInvoiceSql = `
@@ -95,7 +94,6 @@ exports.createInvoice = (req, res) => {
 
     const invoiceNumber = `INV-${year}-${String(nextNumber).padStart(3, "0")}`;
 
-    // 🔑 STEP 2: Insert invoice with generated invoice_number
     const insertSql = `
       INSERT INTO invoices (invoice_number, amount, status, client_id)
       VALUES (?, ?, ?, ?)
@@ -114,4 +112,73 @@ exports.createInvoice = (req, res) => {
       }
     );
   });
+};
+
+// ==============================
+// SHOW EDIT INVOICE FORM (SAFE FIX)
+// GET /invoices/:id/edit
+// ==============================
+exports.showEditInvoiceForm = (req, res) => {
+  const invoiceId = req.params.id;
+
+  db.get(
+    "SELECT * FROM invoices WHERE id = ?",
+    [invoiceId],
+    (err, invoice) => {
+      if (err || !invoice) {
+        console.error(err);
+        return res.send("Invoice not found");
+      }
+
+      // ✅ ONLY ADDITION: clientId
+      res.render("invoices/form", {
+        invoice,
+        isEdit: true,
+        clientId: invoice.client_id
+      });
+    }
+  );
+};
+
+// ==============================
+// UPDATE INVOICE (SAFE ADD)
+// POST /invoices/:id/edit
+// ==============================
+exports.updateInvoice = (req, res) => {
+  const invoiceId = req.params.id;
+  const { amount, status } = req.body;
+
+  if (!amount) {
+    return res.send("Invoice amount is required");
+  }
+
+  db.get(
+    "SELECT client_id FROM invoices WHERE id = ?",
+    [invoiceId],
+    (err, invoice) => {
+      if (err || !invoice) {
+        console.error(err);
+        return res.send("Invoice not found");
+      }
+
+      const sql = `
+        UPDATE invoices
+        SET amount = ?, status = ?
+        WHERE id = ?
+      `;
+
+      db.run(
+        sql,
+        [amount, status, invoiceId],
+        function (err) {
+          if (err) {
+            console.error(err);
+            return res.send("DB error");
+          }
+
+          res.redirect(`/clients/${invoice.client_id}`);
+        }
+      );
+    }
+  );
 };
