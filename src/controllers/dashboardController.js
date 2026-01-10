@@ -1,4 +1,3 @@
-
 const db = require("../db");
 
 // Convert db.get to promise
@@ -25,27 +24,30 @@ exports.getDashboardData = async (req, res) => {
   try {
     console.log("SESSION DATA:", req.session);
 
-    // ===== COUNTS =====
+    // ===== COUNTS (REAL BUSINESS LOGIC) =====
+
+    // ✅ Active clients only
     const totalClients = await runGet(
-      "SELECT COUNT(*) AS total FROM clients"
+      "SELECT COUNT(*) AS total FROM clients WHERE status = 'active'"
     );
 
+    // ✅ Open tasks only (exclude completed)
     const totalTasks = await runGet(
-      "SELECT COUNT(*) AS total FROM tasks"
+      "SELECT COUNT(*) AS total FROM tasks WHERE status != 'completed'"
     );
 
-    // ===== INVOICE COUNTS (REAL DATA) =====
+    // ✅ Invoice counts (case-fixed)
     const pendingInvoices = await runGet(
-      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'Pending'"
+      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'pending'"
     );
 
     const overdueInvoices = await runGet(
-      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'Overdue'"
+      "SELECT COUNT(*) AS total FROM invoices WHERE status = 'overdue'"
     );
 
     // ===== LATEST CLIENTS (LAST 5) =====
     const latestClients = await runAll(
-      "SELECT name, email, status FROM clients ORDER BY id DESC LIMIT 5"
+      "SELECT name, email, status FROM clients ORDER BY created_at DESC LIMIT 5"
     );
 
     // ===== UPCOMING TASKS (NEXT 5) =====
