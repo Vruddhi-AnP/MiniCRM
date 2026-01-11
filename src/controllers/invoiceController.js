@@ -1,4 +1,3 @@
-
 const db = require("../db");
 
 // ==============================
@@ -18,15 +17,13 @@ exports.listInvoices = (req, res) => {
   let params = [];
   let conditions = [];
 
-  if (status) {
+  if (status && status !== "all") {
     conditions.push("invoices.status = ?");
     params.push(status);
   }
 
   if (search) {
-    conditions.push(
-      "(clients.name LIKE ? OR invoices.invoice_number LIKE ?)"
-    );
+    conditions.push("(clients.name LIKE ? OR invoices.invoice_number LIKE ?)");
     params.push(`%${search}%`, `%${search}%`);
   }
 
@@ -54,7 +51,12 @@ exports.listInvoices = (req, res) => {
 // ==============================
 exports.showNewInvoiceForm = (req, res) => {
   const clientId = req.params.id;
-  res.render("invoices/form", { clientId });
+
+  res.render("invoices/form", {
+    clientId,
+    isEdit: false,
+    invoice: null
+  });
 };
 
 // ==============================
@@ -63,7 +65,7 @@ exports.showNewInvoiceForm = (req, res) => {
 // ==============================
 exports.createInvoice = (req, res) => {
   const clientId = req.params.id;
-  const { amount, status } = req.body;
+  const { amount, status, issue_date, due_date, currency, notes } = req.body;
 
   if (!amount) {
     return res.send("Invoice amount is required");
@@ -86,22 +88,30 @@ exports.createInvoice = (req, res) => {
     }
 
     let nextNumber = 1;
-
     if (row && row.invoice_number) {
-      const lastSeq = parseInt(row.invoice_number.split("-")[2]);
-      nextNumber = lastSeq + 1;
+      nextNumber = parseInt(row.invoice_number.split("-")[2]) + 1;
     }
 
     const invoiceNumber = `INV-${year}-${String(nextNumber).padStart(3, "0")}`;
 
-    const insertSql = `
-      INSERT INTO invoices (invoice_number, amount, status, client_id)
-      VALUES (?, ?, ?, ?)
+    const sql = `
+      INSERT INTO invoices
+      (invoice_number, amount, currency, status, issue_date, due_date, notes, client_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.run(
-      insertSql,
-      [invoiceNumber, amount, status || "pending", clientId],
+      sql,
+      [
+        invoiceNumber,
+        amount,
+        currency || "INR",
+        status || "pending",
+        issue_date || null,
+        due_date || null,
+        notes || null,
+        clientId
+      ],
       function (err) {
         if (err) {
           console.error(err);
@@ -115,38 +125,33 @@ exports.createInvoice = (req, res) => {
 };
 
 // ==============================
-// SHOW EDIT INVOICE FORM (SAFE FIX)
+// SHOW EDIT INVOICE FORM
 // GET /invoices/:id/edit
 // ==============================
 exports.showEditInvoiceForm = (req, res) => {
   const invoiceId = req.params.id;
 
-  db.get(
-    "SELECT * FROM invoices WHERE id = ?",
-    [invoiceId],
-    (err, invoice) => {
-      if (err || !invoice) {
-        console.error(err);
-        return res.send("Invoice not found");
-      }
-
-      // ✅ ONLY ADDITION: clientId
-      res.render("invoices/form", {
-        invoice,
-        isEdit: true,
-        clientId: invoice.client_id
-      });
+  db.get("SELECT * FROM invoices WHERE id = ?", [invoiceId], (err, invoice) => {
+    if (err || !invoice) {
+      console.error(err);
+      return res.send("Invoice not found");
     }
-  );
+
+    res.render("invoices/form", {
+      invoice,
+      isEdit: true,
+      clientId: invoice.client_id
+    });
+  });
 };
 
 // ==============================
-// UPDATE INVOICE (SAFE ADD)
+// UPDATE INVOICE
 // POST /invoices/:id/edit
 // ==============================
 exports.updateInvoice = (req, res) => {
   const invoiceId = req.params.id;
-  const { amount, status } = req.body;
+  const { amount, status, issue_date, due_date, currency, notes } = req.body;
 
   if (!amount) {
     return res.send("Invoice amount is required");
@@ -163,13 +168,27 @@ exports.updateInvoice = (req, res) => {
 
       const sql = `
         UPDATE invoices
-        SET amount = ?, status = ?
+        SET
+          amount = ?,
+          currency = ?,
+          status = ?,
+          issue_date = ?,
+          due_date = ?,
+          notes = ?
         WHERE id = ?
       `;
 
       db.run(
         sql,
-        [amount, status, invoiceId],
+        [
+          amount,
+          currency || "INR",
+          status,
+          issue_date || null,
+          due_date || null,
+          notes || null,
+          invoiceId
+        ],
         function (err) {
           if (err) {
             console.error(err);

@@ -145,6 +145,8 @@
         <thead>
           <tr>
             <th>Title</th>
+            <th>Assigned To</th>
+            <th>Due Date</th>
             <th>Status</th>
             <% if (user && user.role !== 'user') { %>
               <th>Action</th>
@@ -154,7 +156,7 @@
         <tbody>
           <% if (tasks.length === 0) { %>
             <tr>
-              <td colspan="<%= user && user.role !== 'user' ? 3 : 2 %>"
+              <td colspan="<%= user && user.role !== 'user' ? 5 : 4 %>"
                   class="text-center text-muted py-3">
                 No tasks added yet
               </td>
@@ -164,6 +166,8 @@
           <% tasks.forEach(t => { %>
             <tr>
               <td><%= t.title %></td>
+              <td><%= t.assigned_to || "-" %></td>
+              <td><%= t.due_date || "-" %></td>
               <td>
                 <span class="badge bg-warning text-dark text-capitalize">
                   <%= t.status.replace("_", " ") %>

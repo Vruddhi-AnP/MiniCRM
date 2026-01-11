@@ -16,6 +16,7 @@
         class="card p-4 shadow-sm"
       >
 
+        <!-- TASK TITLE -->
         <div class="mb-3">
           <label class="form-label">Task Title</label>
           <input
@@ -28,7 +29,30 @@
           />
         </div>
 
-        <!-- ✅ DUE DATE FIELD -->
+        <!-- ✅ NEW: DESCRIPTION -->
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea
+            name="description"
+            class="form-control"
+            rows="3"
+            placeholder="Task details..."
+          >${task && task.description ? task.description : ''}</textarea>
+        </div>
+
+        <!-- ✅ NEW: ASSIGNED TO -->
+        <div class="mb-3">
+          <label class="form-label">Assigned To</label>
+          <input
+            type="text"
+            name="assigned_to"
+            class="form-control"
+            placeholder="Person responsible"
+            value="${task && task.assigned_to ? task.assigned_to : ''}"
+          />
+        </div>
+
+        <!-- DUE DATE -->
         <div class="mb-3">
           <label class="form-label">Due Date</label>
           <input
@@ -39,11 +63,15 @@
           />
         </div>
 
+        <!-- STATUS (STANDARDIZED) -->
         <div class="mb-4">
           <label class="form-label">Status</label>
           <select name="status" class="form-select">
             <option value="pending" ${!task || task.status === 'pending' ? 'selected' : ''}>
               Pending
+            </option>
+            <option value="in_progress" ${task && task.status === 'in_progress' ? 'selected' : ''}>
+              In Progress
             </option>
             <option value="completed" ${task && task.status === 'completed' ? 'selected' : ''}>
               Completed
@@ -51,7 +79,7 @@
           </select>
         </div>
 
-        <!-- ✅ PROFESSIONAL BUTTON ROW -->
+        <!-- BUTTONS -->
         <div class="d-flex justify-content-end">
           <button type="submit" class="btn btn-primary me-2">
             ${isEdit ? 'Update Task' : 'Save Task'}

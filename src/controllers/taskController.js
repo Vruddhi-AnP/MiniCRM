@@ -1,4 +1,3 @@
-
 const db = require("../db");
 
 // ==============================
@@ -18,7 +17,7 @@ exports.listTasks = (req, res) => {
   let params = [];
   let conditions = [];
 
-  if (status) {
+  if (status && status !== "all") {
     conditions.push("tasks.status = ?");
     params.push(status);
   }
@@ -52,8 +51,14 @@ exports.listTasks = (req, res) => {
 // ==============================
 exports.showNewTaskForm = (req, res) => {
   const clientId = req.params.id;
-  res.render("tasks/form", { clientId });
+
+  res.render("tasks/form", {
+    clientId,
+    isEdit: false,
+    task: null
+  });
 };
+
 
 // ==============================
 // CREATE TASK
@@ -61,20 +66,28 @@ exports.showNewTaskForm = (req, res) => {
 // ==============================
 exports.createTask = (req, res) => {
   const clientId = req.params.id;
-  const { title, status, due_date } = req.body;
+  const { title, description, assigned_to, status, due_date } = req.body;
 
   if (!title) {
     return res.send("Task title is required");
   }
 
   const sql = `
-    INSERT INTO tasks (title, status, due_date, client_id)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO tasks
+    (title, description, assigned_to, status, due_date, client_id)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
   db.run(
     sql,
-    [title, status || "pending", due_date || null, clientId],
+    [
+      title,
+      description || null,
+      assigned_to || null,
+      status || "pending",
+      due_date || null,
+      clientId
+    ],
     function (err) {
       if (err) {
         console.error(err);
@@ -87,7 +100,7 @@ exports.createTask = (req, res) => {
 };
 
 // ==============================
-// SHOW EDIT TASK FORM (SAFE ADD)
+// SHOW EDIT TASK FORM
 // GET /tasks/:id/edit
 // ==============================
 exports.showEditTaskForm = (req, res) => {
@@ -104,6 +117,7 @@ exports.showEditTaskForm = (req, res) => {
 
       res.render("tasks/form", {
         task,
+        clientId: task.client_id,
         isEdit: true
       });
     }
@@ -111,18 +125,18 @@ exports.showEditTaskForm = (req, res) => {
 };
 
 // ==============================
-// UPDATE TASK (SAFE ADD)
+// UPDATE TASK
 // POST /tasks/:id/edit
 // ==============================
 exports.updateTask = (req, res) => {
   const taskId = req.params.id;
-  const { title, status, due_date } = req.body;
+  const { title, description, assigned_to, status, due_date } = req.body;
 
   if (!title) {
     return res.send("Task title is required");
   }
 
-  // 🔹 First get client_id (SAFE)
+  // 🔹 Get client_id safely
   db.get(
     "SELECT client_id FROM tasks WHERE id = ?",
     [taskId],
@@ -134,20 +148,32 @@ exports.updateTask = (req, res) => {
 
       const sql = `
         UPDATE tasks
-        SET title = ?, status = ?, due_date = ?
+        SET
+          title = ?,
+          description = ?,
+          assigned_to = ?,
+          status = ?,
+          due_date = ?,
+          updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `;
 
       db.run(
         sql,
-        [title, status, due_date || null, taskId],
+        [
+          title,
+          description || null,
+          assigned_to || null,
+          status || "pending",
+          due_date || null,
+          taskId
+        ],
         function (err) {
           if (err) {
             console.error(err);
             return res.send("DB error");
           }
 
-          // ✅ SAFE REDIRECT
           res.redirect(`/clients/${task.client_id}`);
         }
       );

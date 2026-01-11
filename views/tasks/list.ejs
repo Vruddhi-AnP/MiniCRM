@@ -28,6 +28,8 @@
               <th style="width:80px;">ID</th>
               <th>Title</th>
               <th>Client</th>
+              <th>Assigned To</th>
+              <th>Due Date</th>
               <th style="width:160px;">Status</th>
             </tr>
           </thead>
@@ -36,7 +38,7 @@
             ${
               tasks.length === 0
                 ? `<tr>
-                    <td colspan="4" class="text-center text-muted py-4">
+                    <td colspan="6" class="text-center text-muted py-4">
                       No tasks found
                     </td>
                   </tr>`
@@ -45,14 +47,14 @@
                       <td>${task.id}</td>
                       <td>${task.title}</td>
                       <td>${task.client_name || "-"}</td>
+                      <td>${task.assigned_to || "-"}</td>
+                      <td>${task.due_date || "-"}</td>
                       <td>
                         <span class="badge ${
-                          task.status === "completed"
+                          task.status === "done"
                             ? "bg-success"
                             : task.status === "in_progress"
                             ? "bg-warning text-dark"
-                            : task.status === "todo"
-                            ? "bg-info"
                             : "bg-secondary"
                         } text-capitalize">
                           ${task.status.replace("_", " ")}
