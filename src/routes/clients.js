@@ -1,13 +1,36 @@
+/**
+ * Client Routes
+ * -------------
+ * Handles all routes related to:
+ * - Clients
+ * - Client details
+ * - Client contacts
+ *
+ * Access control is enforced using:
+ * - Authentication middleware
+ * - Role-based authorization middleware
+ */
 
 const express = require("express");
 const router = express.Router();
+
+// Controllers
 const clientController = require("../controllers/clientController");
 const contactsController = require("../controllers/contactsController");
 
+// Middleware
 const { ensureAuthenticated } = require("../middleware/authMiddleware");
 const allowRoles = require("../middleware/roleMiddleware");
 
-// 🔥 NEW CLIENT FORM (ADMIN + SUPERADMIN ONLY)
+// ==============================
+// CLIENT CRUD ROUTES
+// ==============================
+
+/**
+ * GET /clients/new
+ * Show form to create a new client.
+ * Accessible by: admin, superadmin
+ */
 router.get(
   "/clients/new",
   ensureAuthenticated,
@@ -15,7 +38,11 @@ router.get(
   clientController.showNewClientForm
 );
 
-// 🔥 CREATE CLIENT (ADMIN + SUPERADMIN ONLY)
+/**
+ * POST /clients/new
+ * Create a new client.
+ * Accessible by: admin, superadmin
+ */
 router.post(
   "/clients/new",
   ensureAuthenticated,
@@ -23,7 +50,11 @@ router.post(
   clientController.createClient
 );
 
-// ✏️ EDIT CLIENT FORM (ADMIN + SUPERADMIN ONLY)
+/**
+ * GET /clients/:id/edit
+ * Show edit form for an existing client.
+ * Accessible by: admin, superadmin
+ */
 router.get(
   "/clients/:id/edit",
   ensureAuthenticated,
@@ -31,21 +62,34 @@ router.get(
   clientController.showEditClientForm
 );
 
-// ✅ List clients (ALL LOGGED-IN USERS)
+/**
+ * GET /clients
+ * List all clients.
+ * Accessible by: all authenticated users
+ */
 router.get(
   "/clients",
   ensureAuthenticated,
   clientController.listClients
 );
 
-// ✅ Client detail (ALL LOGGED-IN USERS)
+/**
+ * GET /clients/:id
+ * Show detailed view of a single client.
+ * Includes contacts, tasks, and invoices.
+ * Accessible by: all authenticated users
+ */
 router.get(
   "/clients/:id",
   ensureAuthenticated,
   clientController.getClientDetail
 );
 
-// ✏️ UPDATE CLIENT (ADMIN + SUPERADMIN ONLY)
+/**
+ * POST /clients/:id/edit
+ * Update client information.
+ * Accessible by: admin, superadmin
+ */
 router.post(
   "/clients/:id/edit",
   ensureAuthenticated,
@@ -53,7 +97,11 @@ router.post(
   clientController.updateClient
 );
 
-// 🗑 DELETE CLIENT (ADMIN + SUPERADMIN ONLY)
+/**
+ * POST /clients/:id/delete
+ * Soft-delete a client by marking it inactive.
+ * Accessible by: admin, superadmin
+ */
 router.post(
   "/clients/:id/delete",
   ensureAuthenticated,
@@ -62,29 +110,44 @@ router.post(
 );
 
 // ==============================
-// CONTACTS
+// CONTACT ROUTES (NESTED UNDER CLIENT)
 // ==============================
+
+/**
+ * GET /clients/:id/contacts/new
+ * Show form to create a new contact for a client.
+ */
 router.get(
   "/clients/:id/contacts/new",
   contactsController.showNewContactForm
 );
 
+/**
+ * POST /clients/:id/contacts/new
+ * Create a new contact for a client.
+ */
 router.post(
   "/clients/:id/contacts/new",
   contactsController.createContact
 );
 
 // ==============================
-// EDIT CONTACT
+// EDIT CONTACT ROUTES
 // ==============================
 
-// Show edit contact form
+/**
+ * GET /clients/:clientId/contacts/:contactId/edit
+ * Show edit form for an existing contact.
+ */
 router.get(
   "/clients/:clientId/contacts/:contactId/edit",
   contactsController.showEditContactForm
 );
 
-// Update contact
+/**
+ * POST /clients/:clientId/contacts/:contactId/edit
+ * Update an existing contact.
+ */
 router.post(
   "/clients/:clientId/contacts/:contactId/edit",
   contactsController.updateContact
