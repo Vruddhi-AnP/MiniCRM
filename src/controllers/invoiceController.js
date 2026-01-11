@@ -131,18 +131,22 @@ exports.createInvoice = (req, res) => {
 exports.showEditInvoiceForm = (req, res) => {
   const invoiceId = req.params.id;
 
-  db.get("SELECT * FROM invoices WHERE id = ?", [invoiceId], (err, invoice) => {
-    if (err || !invoice) {
-      console.error(err);
-      return res.send("Invoice not found");
-    }
+  db.get(
+    "SELECT * FROM invoices WHERE id = ?",
+    [invoiceId],
+    (err, invoice) => {
+      if (err || !invoice) {
+        console.error(err);
+        return res.send("Invoice not found");
+      }
 
-    res.render("invoices/form", {
-      invoice,
-      isEdit: true,
-      clientId: invoice.client_id
-    });
-  });
+      res.render("invoices/form", {
+        invoice,
+        isEdit: true,
+        clientId: invoice.client_id
+      });
+    }
+  );
 };
 
 // ==============================
@@ -183,7 +187,7 @@ exports.updateInvoice = (req, res) => {
         [
           amount,
           currency || "INR",
-          status,
+          status || "pending",
           issue_date || null,
           due_date || null,
           notes || null,
