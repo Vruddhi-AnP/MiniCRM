@@ -6,11 +6,17 @@
         ← Back to Client
       </a>
 
-      <h2 class="mb-4">Add New Invoice</h2>
+      <h2 class="mb-4">
+        ${isEdit ? "Edit Invoice" : "Add New Invoice"}
+      </h2>
 
       <form
         method="POST"
-        action="/clients/${clientId}/invoices/new"
+        action="${
+          isEdit
+            ? `/invoices/${invoice.id}/edit`
+            : `/clients/${clientId}/invoices/new`
+        }"
         class="card p-4 shadow-sm"
       >
 
@@ -21,6 +27,7 @@
             name="amount"
             class="form-control"
             placeholder="Enter amount"
+            value="${invoice ? invoice.amount : ""}"
             required
           />
         </div>
@@ -28,17 +35,24 @@
         <div class="mb-4">
           <label class="form-label">Status</label>
           <select name="status" class="form-select">
-            <option value="pending" selected>Pending</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
+            <option value="pending" ${!invoice || invoice.status === "pending" ? "selected" : ""}>
+              Pending
+            </option>
+            <option value="paid" ${invoice && invoice.status === "paid" ? "selected" : ""}>
+              Paid
+            </option>
+            <option value="overdue" ${invoice && invoice.status === "overdue" ? "selected" : ""}>
+              Overdue
+            </option>
           </select>
         </div>
 
         <!-- ✅ PROFESSIONAL BUTTON ROW -->
         <div class="d-flex justify-content-end">
           <button type="submit" class="btn btn-primary me-2">
-            Save Invoice
+            ${isEdit ? "Update Invoice" : "Save Invoice"}
           </button>
+
           <a href="/clients/${clientId}" class="btn btn-light">
             Cancel
           </a>
